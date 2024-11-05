@@ -1,0 +1,51 @@
+version: 0.2
+phases:
+  build:
+    commands:
+      - |
+        echo Build started on `date`
+        filename="sample_config_file.txt"
+        file=$CODEBUILD_SRC_DIR/config_files/"${filename}"
+        echo $file
+        echo Printing env variables
+        echo "${env}"
+        echo "${domain}"
+        KEY="${domain}_${env}"
+        echo "${KEY}"
+        VALUE=$(grep "^${KEY}=" "$file" | sed -e "s/^${KEY}=//")
+        if [ -z "$VALUE" ]; then
+        echo "Key '$KEY' not found in $file"
+        else echo "The value for '$KEY' is '$VALUE'"
+        fi
+        cfnfilename="main.yaml"
+        cfnfile=$CODEBUILD_SRC_DIR/cfn/"${cfnfilename}"
+        echo $cfnfile
+        iamrolefilename="iam_roles.yaml"
+        iamrolefile=$CODEBUILD_SRC_DIR/cfn/"${iamrolefilename}"
+        echo $iamrolefile
+        lffilename="lakeformation.yaml"
+        lffile=$CODEBUILD_SRC_DIR/cfn/"${lffilename}"
+        echo $lffile
+        gluedbfilename="glue_database.yaml"
+        gluedbfile=$CODEBUILD_SRC_DIR/cfn/"${gluedbfilename}"
+        echo $gluedbfile
+        lfpermissionsfilename="lfpermissions.yaml"
+        lfpermissionsfile=$CODEBUILD_SRC_DIR/cfn/"${lfpermissionsfilename}"
+        echo $lfpermissionsfile                                            
+        aws s3 cp $iamrolefile s3://mycicd-bucket-ap3/cicd-files/
+        aws s3 cp $gluedbfile s3://mycicd-bucket-ap3/cicd-files/
+        aws s3 cp $lffile s3://mycicd-bucket-ap3/cicd-files/
+        aws s3 cp $lfpermissionsfile s3://mycicd-bucket-ap3/cicd-files/             
+        iamroleurl=https://s3.amazonaws.com/mycicd-bucket-ap3/cicd-files/iam_roles.yaml
+        GlueDBurl=https://s3.amazonaws.com/mycicd-bucket-ap3/cicd-files/glue_database.yaml
+        lfurl=https://s3.amazonaws.com/mycicd-bucket-ap3/cicd-files/lakeformation.yaml
+        lfpermissionsurl=https://s3.amazonaws.com/mycicd-bucket-ap3/cicd-files/lfpermissions.yaml
+        aws cloudformation deploy \
+          --template-file $cfnfile \
+          --stack-name datamesh-stack \
+          --parameter-overrides EnvType="${env}" DomainName="${domain}" IAMRolePath="${iamroleurl}" GlueDBPath="${GlueDBurl}" lfPath="${lfurl}" lfpermissionsPath="${lfpermissionsurl}" \
+          --capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM
+  post_build:
+    commands:
+      - aws cloudformation describe-stack-events --stack-name datamesh-stack
+      - echo Build complete

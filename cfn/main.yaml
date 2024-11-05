@@ -1,0 +1,89 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: CloudFormation template to create an S3 bucket
+
+Parameters:
+  EnvType:
+    Type: String
+    Default: "dev"
+    Description: The environment type (e.g., prod, dev)
+  DomainName:
+    Type: String
+    Description: The name of the domain
+
+#IAMRole Parameters
+  IAMRolePath:
+    Type: String
+    Description: IAM Role yaml path
+#GlueDB Parameters
+  GlueDBPath:
+    Type: String
+    Description: Database yaml path     
+#LF Parameters
+  lfPath:
+    Type: String
+    Description: 'LF Stack S3 URL of the nested stack template'    
+  DataLakeBucket:
+    Type: String
+    Description: 'Name of the S3 bucket to use as the data lake'
+    Default: "sanbox---trusted"
+  CodeBuildRole:
+    Type: String
+    Description: 'Code Build Role Which is used to build all CF reosurces'
+    Default: "codebuild-sandbox-governance-service-role"
+  ProducerAccountId:
+    Type: String
+    Description: 'AWS Account ID of the producer account'  
+    Default: "117134819170"
+  lfpermissionsPath:
+    Type: String
+    Description: 'LF Permissions Stack S3 URL of the nested stack template'    
+
+Resources:
+
+  IAMRoles:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: !Ref IAMRolePath
+      Parameters:
+        EnvType: !Ref EnvType
+        DomainName: !Ref DomainName
+        DataLakeBucketName: !Ref DataLakeBucket
+
+  LakeFormationStack:
+    Type: AWS::CloudFormation::Stack
+    DependsOn: IAMRoles    
+    Properties:
+      TemplateURL: !Ref lfPath
+      Parameters:
+        DataLakeBucketName: !Ref DataLakeBucket
+        CodeBuildRole: !Ref CodeBuildRole
+        LFServiceRoleArn: !GetAtt IAMRoles.Outputs.LFServiceRoleArn
+        ProducerAccountId: !Ref ProducerAccountId
+
+  GlueDatabase:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: !Ref GlueDBPath
+      Parameters:
+        EnvType: !Ref EnvType
+        DomainName: !Ref DomainName
+
+  LFPermissions:
+    Type: AWS::CloudFormation::Stack
+    DependsOn: GlueDatabase    
+    Properties:
+      TemplateURL: !Ref lfpermissionsPath
+      Parameters:
+        DatabaseName: !GetAtt GlueDatabase.Outputs.DatabaseName
+        ProducerAccountId: !Ref ProducerAccountId
+
+Outputs:
+
+  LFServiceRoleArn:
+    Description: 'LF Service IAM Role'
+    Value: !GetAtt IAMRoles.Outputs.LFServiceRoleArn
+    Export:
+      Name: LFServiceRoleArn
+  DatabaseName:
+    Description: 'Name of the Glue Database'
+    Value:  !GetAtt GlueDatabase.Outputs.DatabaseName      

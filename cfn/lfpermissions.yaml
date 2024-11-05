@@ -1,0 +1,27 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Nested stack for creating AWS Lake Formation resources'
+
+Parameters:
+  DatabaseName:
+    Type: String
+    Description: 'Name of the Glue Database to store the crawled data'
+  ProducerAccountId:
+    Type: String
+    Description: 'AWS Account ID of the producer account'
+
+Resources:
+
+# Grant LF permissions on DB to Producer Account (Sharing the DB)
+  DataLocationPermissions:
+    Type: AWS::LakeFormation::PrincipalPermissions
+    Properties:
+      Resource:
+        Database:
+          CatalogId: !Ref AWS::AccountId  # Account ID where S3 bucket is registered
+          Name: !Ref DatabaseName
+      Principal:
+        DataLakePrincipalIdentifier: !Ref ProducerAccountId
+      Permissions:
+        - "CREATE_TABLE" 
+        - "ALTER" 
+        - "DESCRIBE"

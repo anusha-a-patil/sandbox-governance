@@ -1,0 +1,51 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Nested stack for creating AWS Lake Formation resources'
+
+Parameters:
+  CodeBuildRole:
+    Type: String
+    Description: 'Code Build Role Which is used to build all CF reosurces' 
+  DataLakeBucketName:
+    Type: String
+    Description: 'Name of the S3 bucket to use as the data lake'
+  LFServiceRoleArn:
+    Type: String
+    Description: 'Lake Formation Register Location Service Role ARN'
+  ProducerAccountId:
+    Type: String
+    Description: 'AWS Account ID of the producer account'        
+
+Resources:
+  LakeFormationDataLakeSettings:
+    Type: AWS::LakeFormation::DataLakeSettings
+    Properties: 
+      Admins: 
+        - DataLakePrincipalIdentifier: !Sub 'arn:aws:iam::${AWS::AccountId}:root' #Role used by you to access the account
+        - DataLakePrincipalIdentifier: !Sub 'arn:aws:iam::${AWS::AccountId}:role/service-role/${CodeBuildRole}'
+      CreateDatabaseDefaultPermissions: []  # Empty list to uncheck default settings
+      CreateTableDefaultPermissions: []  # Empty list to uncheck default settings
+
+#Registering DataLake Bucket in lakeFormation
+  LakeFormationResource:
+    Type: AWS::LakeFormation::Resource
+    Properties:
+      ResourceArn: !Sub 'arn:aws:s3:::${DataLakeBucketName}' #Registering DataLake Bucket in the account
+      RoleArn: !Ref LFServiceRoleArn
+      UseServiceLinkedRole: false
+
+#Grant Data Location Permissions with Producer Account on DataLake Bucket
+  LakeFormationDataLocation:
+    Type: AWS::LakeFormation::PrincipalPermissions
+    DependsOn: LakeFormationResource    
+    Properties:
+      Principal:
+        DataLakePrincipalIdentifier: !Ref ProducerAccountId
+      Resource:
+        DataLocationResource:
+          CatalogId: !Ref AWS::AccountId  # Source account ID
+          ResourceArn: !Sub 'arn:aws:s3:::${DataLakeBucketName}'  # S3 bucket ARN
+      Permissions:
+        - DATA_LOCATION_ACCESS
+      PermissionsWithGrantOption:
+        - DATA_LOCATION_ACCESS
+

@@ -1,0 +1,55 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'IAM Roles for services stack'
+
+Parameters:
+  EnvType:
+    Type: String
+    Default: "dev"
+    Description: The environment type (e.g., prod, dev)
+  DomainName:
+    Type: String
+    Description: The name of the domain
+  DataLakeBucketName:
+    Type: String
+    Description: 'Name of the S3 bucket to use as the data lake'   
+
+Resources:
+
+  LFRegisterLocationServiceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lakeformation.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Path: "/"
+      Policies:
+        - PolicyName: S3DataLakePolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - lakeformation:RegisterResource 
+                Resource:
+                  - !Sub arn:aws:s3:::${DataLakeBucketName}          
+              - Effect: Allow
+                Action:
+                  - s3:PutObject
+                  - s3:Get*
+                  - s3:DeleteObject
+                  - s3:ListBucket
+                  - s3:GetBucketLocation
+                Resource:
+                  - !Sub arn:aws:s3:::${DataLakeBucketName}                
+                  - !Sub arn:aws:s3:::${DataLakeBucketName}/*                  
+
+Outputs:
+  LFServiceRoleArn:
+    Description: 'Name of the LF service Role'
+    Value: !GetAtt LFRegisterLocationServiceRole.Arn

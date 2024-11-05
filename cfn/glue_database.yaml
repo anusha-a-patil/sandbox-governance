@@ -1,0 +1,28 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'AWS Glue Database CloudFormation Template'
+
+Parameters:
+  EnvType:
+    Type: String
+    Default: "dev"
+    Description: The environment type (e.g., prod, dev)
+  DomainName:
+    Type: String
+    Description: The name of the domain
+
+Resources:
+  GlueDatabase:
+    Type: AWS::Glue::Database
+    Properties:
+      CatalogId: !Ref AWS::AccountId
+      DatabaseInput:
+        Name:
+         Fn::Join:
+          - "-"
+          - [ "sandbox", !Ref DomainName, !Ref EnvType, "db"]        
+        Description: "Database for storing metadata from Glue Crawler"
+
+Outputs:
+  DatabaseName:
+    Description: 'Name of the created Glue Database'
+    Value: !Ref GlueDatabase

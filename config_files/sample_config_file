@@ -1,0 +1,6 @@
+marketing_dev=10
+marketing_sit=15
+marketing_uat=20
+finance_dev=10
+finance_sit=15
+finance_uat=20
