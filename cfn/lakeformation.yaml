@@ -41,7 +41,7 @@ Resources:
       Principal:
         DataLakePrincipalIdentifier: !Ref ProducerAccountId
       Resource:
-        DataLocationResource:
+        DataLocation:
           CatalogId: !Ref AWS::AccountId  # Source account ID
           ResourceArn: !Sub 'arn:aws:s3:::${DataLakeBucketName}'  # S3 bucket ARN
       Permissions:
