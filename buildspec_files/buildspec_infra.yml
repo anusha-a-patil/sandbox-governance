@@ -32,14 +32,14 @@ phases:
         lfpermissionsfilename="lfpermissions.yaml"
         lfpermissionsfile=$CODEBUILD_SRC_DIR/cfn/"${lfpermissionsfilename}"
         echo $lfpermissionsfile                                            
-        aws s3 cp $iamrolefile s3://mycicd-bucket-ap3/cicd-files/
-        aws s3 cp $gluedbfile s3://mycicd-bucket-ap3/cicd-files/
-        aws s3 cp $lffile s3://mycicd-bucket-ap3/cicd-files/
-        aws s3 cp $lfpermissionsfile s3://mycicd-bucket-ap3/cicd-files/             
-        iamroleurl=https://s3.amazonaws.com/mycicd-bucket-ap3/cicd-files/iam_roles.yaml
-        GlueDBurl=https://s3.amazonaws.com/mycicd-bucket-ap3/cicd-files/glue_database.yaml
-        lfurl=https://s3.amazonaws.com/mycicd-bucket-ap3/cicd-files/lakeformation.yaml
-        lfpermissionsurl=https://s3.amazonaws.com/mycicd-bucket-ap3/cicd-files/lfpermissions.yaml
+        aws s3 cp $iamrolefile s3://mycicd-bucket-apat/cicd-files/
+        aws s3 cp $gluedbfile s3://mycicd-bucket-apat/cicd-files/
+        aws s3 cp $lffile s3://mycicd-bucket-apat/cicd-files/
+        aws s3 cp $lfpermissionsfile s3://mycicd-bucket-apat/cicd-files/             
+        iamroleurl=https://s3.amazonaws.com/mycicd-bucket-apat/cicd-files/iam_roles.yaml
+        GlueDBurl=https://s3.amazonaws.com/mycicd-bucket-apat/cicd-files/glue_database.yaml
+        lfurl=https://s3.amazonaws.com/mycicd-bucket-apat/cicd-files/lakeformation.yaml
+        lfpermissionsurl=https://s3.amazonaws.com/mycicd-bucket-apat/cicd-files/lfpermissions.yaml
         aws cloudformation deploy \
           --template-file $cfnfile \
           --stack-name datamesh-stack \
