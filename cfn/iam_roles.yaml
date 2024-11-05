@@ -44,7 +44,6 @@ Resources:
                   - s3:Get*
                   - s3:DeleteObject
                   - s3:ListBucket
-                  - s3:GetBucketLocation
                 Resource:
                   - !Sub arn:aws:s3:::${DataLakeBucketName}                
                   - !Sub arn:aws:s3:::${DataLakeBucketName}/*                  
