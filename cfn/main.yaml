@@ -70,7 +70,8 @@ Resources:
 
   LFPermissions:
     Type: AWS::CloudFormation::Stack
-    DependsOn: GlueDatabase    
+    DependsOn: GlueDatabase
+    DependsOn: LakeFormationStack    
     Properties:
       TemplateURL: !Ref lfpermissionsPath
       Parameters:

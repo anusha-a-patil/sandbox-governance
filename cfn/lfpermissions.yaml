@@ -25,3 +25,4 @@ Resources:
         - "CREATE_TABLE" 
         - "ALTER" 
         - "DESCRIBE"
+      PermissionsWithGrantOption: []     
