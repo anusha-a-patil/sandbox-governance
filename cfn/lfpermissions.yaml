@@ -25,4 +25,7 @@ Resources:
         - "CREATE_TABLE" 
         - "ALTER" 
         - "DESCRIBE"
-      PermissionsWithGrantOption: []     
+      PermissionsWithGrantOption:
+        - "CREATE_TABLE" 
+        - "ALTER" 
+        - "DESCRIBE"      
