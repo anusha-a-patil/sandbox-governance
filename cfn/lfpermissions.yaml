@@ -33,7 +33,7 @@ Resources:
         - "ALTER" 
         - "DESCRIBE"
 
-  DataLocationPermissions:
+  LFPermissionsConsumer:
     Type: AWS::LakeFormation::PrincipalPermissions
     Properties:
       Resource:
