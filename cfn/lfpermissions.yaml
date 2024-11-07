@@ -28,4 +28,4 @@ Resources:
       PermissionsWithGrantOption:
         - "CREATE_TABLE" 
         - "ALTER" 
-        - "DESCRIBE"      
+        - "DESCRIBE"
