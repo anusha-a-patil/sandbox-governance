@@ -43,5 +43,21 @@ Resources:
       Principal:
         DataLakePrincipalIdentifier: !Ref ConsumerAccountId
       Permissions:
+        - "SELECT"
+        - "DESCRIBE"
+      PermissionsWithGrantOption: []
+
+  LFPermissionsConsumerTables:
+    Type: AWS::LakeFormation::PrincipalPermissions
+    Properties:
+      Resource:
+        Table:
+          CatalogId: !Ref AWS::AccountId
+          DatabaseName: !Ref DatabaseName
+          TableWildcard: {}
+      Principal:
+        DataLakePrincipalIdentifier: !Ref ConsumerAccountId
+      Permissions:
+        - "SELECT"
         - "DESCRIBE"
       PermissionsWithGrantOption: []
