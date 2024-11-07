@@ -8,6 +8,9 @@ Parameters:
   ProducerAccountId:
     Type: String
     Description: 'AWS Account ID of the producer account'
+  ConsumerAccountId:
+    Type: String
+    Description: 'AWS Account ID of the producer account'
 
 Resources:
 
@@ -29,3 +32,16 @@ Resources:
         - "CREATE_TABLE" 
         - "ALTER" 
         - "DESCRIBE"
+
+  DataLocationPermissions:
+    Type: AWS::LakeFormation::PrincipalPermissions
+    Properties:
+      Resource:
+        Database:
+          CatalogId: !Ref AWS::AccountId  # Account ID where S3 bucket is registered
+          Name: !Ref DatabaseName
+      Principal:
+        DataLakePrincipalIdentifier: !Ref ConsumerAccountId
+      Permissions:
+        - "DESCRIBE"
+      PermissionsWithGrantOption: []
