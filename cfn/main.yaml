@@ -36,7 +36,8 @@ Parameters:
     Default: "117134819170"
   ConsumerAccountId:
     Type: String
-    Description: 'AWS Account ID of the Consumer account'     
+    Description: 'AWS Account ID of the Consumer account'
+    Default: '020392763922'    
   lfpermissionsPath:
     Type: String
     Description: 'LF Permissions Stack S3 URL of the nested stack template'    
