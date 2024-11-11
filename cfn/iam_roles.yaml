@@ -46,9 +46,54 @@ Resources:
                   - s3:ListBucket
                 Resource:
                   - !Sub arn:aws:s3:::${DataLakeBucketName}                
-                  - !Sub arn:aws:s3:::${DataLakeBucketName}/*                  
+                  - !Sub arn:aws:s3:::${DataLakeBucketName}/*
+
+GlueJobRole                
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: 
+         Fn::Join:
+          - "-"
+          - [ "sandbox", !Ref DomainName, !Ref EnvType, "gluejob-role"]       
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - glue.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Path: "/"
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSGlueServiceRole
+      Policies:
+        - PolicyName: S3Access
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:PutObject
+                  - s3:ListBucket
+                Resource: '*'
+        - PolicyName: CloudwatchAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: '*'                                  
 
 Outputs:
   LFServiceRoleArn:
     Description: 'Name of the LF service Role'
     Value: !GetAtt LFRegisterLocationServiceRole.Arn
+
+  GlueJobRoleArn:
+    Description: 'Name of the Jlue Job Role'
+    Value: !GetAtt GlueJobRole.Arn    
