@@ -40,7 +40,28 @@ Parameters:
     Default: '020392763922'    
   lfpermissionsPath:
     Type: String
-    Description: 'LF Permissions Stack S3 URL of the nested stack template'    
+    Description: 'LF Permissions Stack S3 URL of the nested stack template'
+#Glue Job Parameters
+  ScriptBucketName:
+    Type: String
+    Description: 'Name of the S3 bucket for Glue scripts'
+    Default: 'mycicd-bucket-ap'
+  ScriptKey:
+    Type: String
+    Description: 'S3 key for the Glue job script'
+    Default: 'scripts/gluejob.py'    
+  GlueJobPath:
+    Type: String
+    Description: 'Glue Job yaml path Parameters'     
+  SourceBucketName:
+    Type: String
+    Description: Name of the Source S3 bucket
+    Default: 'mycicd-bucket-ap'   
+  TargetBucketName:
+    Type: String
+    Description: Name of the target S3 bucket
+    Default: 'mycicd-bucket-ap'        
+
 
 Resources:
 
@@ -83,6 +104,19 @@ Resources:
         ProducerAccountId: !Ref ProducerAccountId
         ConsumerAccountId: !Ref ConsumerAccountId
 
+  GlueJob:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: !Ref GlueJobPath
+      Parameters:
+        EnvType: !Ref EnvType
+        DomainName: !Ref DomainName
+        ScriptBucketName: !Ref ScriptBucketName
+        ScriptKey: !Ref ScriptKey
+        SourceBucketName: !Ref SourceBucketName
+        TargetBucketName: !Ref TargetBucketName
+        JobRoleArn: !GetAtt IAMRoles.Outputs.GlueJobRoleArn
+
 Outputs:
 
   LFServiceRoleArn:
@@ -90,6 +124,15 @@ Outputs:
     Value: !GetAtt IAMRoles.Outputs.LFServiceRoleArn
     Export:
       Name: LFServiceRoleArn
+
+  GlueJobRoleArn:      
+    Description: 'Glue Job IAM Role'
+    Value: !GetAtt IAMRoles.Outputs.GlueJobRoleArn
+          
   DatabaseName:
     Description: 'Name of the Glue Database'
-    Value:  !GetAtt GlueDatabase.Outputs.DatabaseName      
+    Value:  !GetAtt GlueDatabase.Outputs.DatabaseName
+
+  JobName:
+    Description: 'The name of the created Glue Job'
+    Value: !GetAtt GlueJob.Outputs.JobName

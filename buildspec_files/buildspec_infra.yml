@@ -31,19 +31,24 @@ phases:
         echo $gluedbfile
         lfpermissionsfilename="lfpermissions.yaml"
         lfpermissionsfile=$CODEBUILD_SRC_DIR/cfn/"${lfpermissionsfilename}"
-        echo $lfpermissionsfile                                            
+        echo $lfpermissionsfile
+        gluejobfilename="glue_job.yaml"
+        gluejobfile=$CODEBUILD_SRC_DIR/cfn/"${gluejobfilename}"
+        echo $gluejobfile                                                   
         aws s3 cp $iamrolefile s3://mycicd-bucket-apat/cicd-files/
         aws s3 cp $gluedbfile s3://mycicd-bucket-apat/cicd-files/
         aws s3 cp $lffile s3://mycicd-bucket-apat/cicd-files/
-        aws s3 cp $lfpermissionsfile s3://mycicd-bucket-apat/cicd-files/             
+        aws s3 cp $lfpermissionsfile s3://mycicd-bucket-apat/cicd-files/
+        aws s3 cp $gluejobfile s3://mycicd-bucket-apat/cicd-files/                    
         iamroleurl=https://s3.amazonaws.com/mycicd-bucket-apat/cicd-files/iam_roles.yaml
         GlueDBurl=https://s3.amazonaws.com/mycicd-bucket-apat/cicd-files/glue_database.yaml
         lfurl=https://s3.amazonaws.com/mycicd-bucket-apat/cicd-files/lakeformation.yaml
         lfpermissionsurl=https://s3.amazonaws.com/mycicd-bucket-apat/cicd-files/lfpermissions.yaml
+        gluejoburl=https://s3.amazonaws.com/mycicd-bucket-apat/cicd-files/glue_job.yaml
         aws cloudformation deploy \
           --template-file $cfnfile \
           --stack-name datamesh-stack \
-          --parameter-overrides EnvType="${env}" DomainName="${domain}" IAMRolePath="${iamroleurl}" GlueDBPath="${GlueDBurl}" lfPath="${lfurl}" lfpermissionsPath="${lfpermissionsurl}" \
+          --parameter-overrides EnvType="${env}" DomainName="${domain}" IAMRolePath="${iamroleurl}" GlueDBPath="${GlueDBurl}" lfPath="${lfurl}" lfpermissionsPath="${lfpermissionsurl}" GlueJobPath="${gluejoburl}" \
           --capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM
   post_build:
     commands:

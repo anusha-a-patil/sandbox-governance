@@ -1,0 +1,56 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Nested stack for Glue Job'
+
+Parameters:
+  EnvType:
+    Type: String
+    Description: The environment type (e.g., prod, dev)
+  DomainName:
+    Type: String
+    Description: The name of the domain
+  ScriptBucketName:
+    Type: String
+    Description: 'Name of the S3 bucket for Glue scripts' 
+  ScriptKey:
+    Type: String
+    Description: 'S3 key for the Glue job script' 
+  JobRoleArn:
+    Type: String
+    Description: 'ARN of the IAM role for the Glue Job'
+  SourceBucketName:
+    Type: String
+    Description: Name of the Source S3 bucket    
+  TargetBucketName:
+    Type: String
+    Description: Name of the target S3 bucket
+
+Resources:
+  GlueJob:
+    Type: 'AWS::Glue::Job'
+    Properties:
+      Name:
+         Fn::Join:
+          - "-"
+          - [ "sandbox", !Ref DomainName, !Ref EnvType, "gluejob"]        
+      Role: !Ref JobRoleArn
+      Command:
+        Name: glueetl
+        ScriptLocation: !Sub 's3://${ScriptBucketName}/${ScriptKey}'
+        PythonVersion: '3'
+      DefaultArguments:
+        '--job-language': 'python'
+        '--job-bookmark-option': 'job-bookmark-enable'
+        '--SOURCE_BUCKET': !Ref SourceBucketName
+        '--DEST_BUCKET': !Ref TargetBucketName      
+      ExecutionProperty:
+        MaxConcurrentRuns: 1
+      MaxRetries: 0
+      Timeout: 2880  # 48 hours
+      GlueVersion: '3.0'
+      NumberOfWorkers: 2
+      WorkerType: 'G.1X'
+
+Outputs:
+  JobName:
+    Description: 'The name of the created Glue Job'
+    Value: !Ref GlueJob
