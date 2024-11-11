@@ -60,8 +60,11 @@ Parameters:
   TargetBucketName:
     Type: String
     Description: Name of the target S3 bucket
-    Default: 'mycicd-bucket-ap'        
-
+    Default: 'mycicd-bucket-ap'
+  RetentionInDays:
+    Type: Number
+    Default: 30
+    Description: The number of days to retain log events            
 
 Resources:
 
@@ -116,6 +119,7 @@ Resources:
         SourceBucketName: !Ref SourceBucketName
         TargetBucketName: !Ref TargetBucketName
         JobRoleArn: !GetAtt IAMRoles.Outputs.GlueJobRoleArn
+        RetentionInDays: !Ref RetentionInDays
 
 Outputs:
 

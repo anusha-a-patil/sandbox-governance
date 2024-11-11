@@ -23,6 +23,9 @@ Parameters:
   TargetBucketName:
     Type: String
     Description: Name of the target S3 bucket
+  RetentionInDays:
+    Type: Number
+    Description: The number of days to retain log events    
 
 Resources:
   GlueJob:
