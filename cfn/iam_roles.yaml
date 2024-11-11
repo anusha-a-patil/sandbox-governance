@@ -48,7 +48,7 @@ Resources:
                   - !Sub arn:aws:s3:::${DataLakeBucketName}                
                   - !Sub arn:aws:s3:::${DataLakeBucketName}/*
 
-GlueJobRole                
+  GlueJobRole:                
     Type: AWS::IAM::Role
     Properties:
       RoleName: 
@@ -95,5 +95,5 @@ Outputs:
     Value: !GetAtt LFRegisterLocationServiceRole.Arn
 
   GlueJobRoleArn:
-    Description: 'Name of the Jlue Job Role'
+    Description: 'Name of the Glue Job Role'
     Value: !GetAtt GlueJobRole.Arn    
