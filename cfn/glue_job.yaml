@@ -41,7 +41,11 @@ Resources:
         '--job-language': 'python'
         '--job-bookmark-option': 'job-bookmark-enable'
         '--SOURCE_BUCKET': !Ref SourceBucketName
-        '--DEST_BUCKET': !Ref TargetBucketName      
+        '--DEST_BUCKET': !Ref TargetBucketName
+        '--enable-metrics': ''
+        '--enable-continuous-cloudwatch-log': 'true'
+        '--continuous-log-logGroup': !Ref GlueJobLogGroup
+        '--enable-continuous-log-filter': 'true'            
       ExecutionProperty:
         MaxConcurrentRuns: 1
       MaxRetries: 0
@@ -50,7 +54,22 @@ Resources:
       NumberOfWorkers: 2
       WorkerType: 'G.1X'
 
+  GlueJobLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName:
+        Fn::Join:
+          - "-"
+          - [ "/aws-glue/jobs", "sandbox", !Ref DomainName, !Ref EnvType, "logs"]
+      RetentionInDays: !Ref RetentionInDays   
+
 Outputs:
   JobName:
     Description: 'The name of the created Glue Job'
     Value: !Ref GlueJob
+  LogGroupName:
+    Description: 'Name of the CloudWatch Log Group'
+    Value: !Ref GlueJobLogGroup
+  LogGroupArn:
+    Description: 'ARN of the CloudWatch Log Group'
+    Value: !GetAtt GlueJobLogGroup.Arn
