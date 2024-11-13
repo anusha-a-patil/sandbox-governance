@@ -11,7 +11,10 @@ Parameters:
     Description: The name of the domain
   DataLakeBucketName:
     Type: String
-    Description: 'Name of the S3 bucket to use as the data lake'   
+    Description: 'Name of the S3 bucket to use as the data lake'
+  SQSQueueArn:
+    Type: String
+    Description: 'ARN of the SQS Queue'       
 
 Resources:
 
@@ -88,7 +91,46 @@ Resources:
                   - logs:CreateLogGroup
                   - logs:CreateLogStream
                   - logs:PutLogEvents
-                Resource: '*'                                  
+                Resource: '*' 
+
+  # Lambda Execution Role
+  LambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: 
+        Fn::Join:
+          - "-"
+          - [ "sandbox", !Ref DomainName, !Ref EnvType, "lambda-role"]
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: SQSAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - sqs:ReceiveMessage
+                  - sqs:DeleteMessage
+                  - sqs:GetQueueAttributes
+                  - sqs:ChangeMessageVisibility
+                Resource: 
+                  - !Ref SQSQueueArn
+        - PolicyName: S3Access
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                Resource: "*"                                               
 
 Outputs:
   LFServiceRoleArn:
@@ -97,4 +139,9 @@ Outputs:
 
   GlueJobRoleArn:
     Description: 'Name of the Glue Job Role'
-    Value: !GetAtt GlueJobRole.Arn    
+    Value: !GetAtt GlueJobRole.Arn   
+
+  LambdaExecutionRoleArn:
+    Description: 'Name of the Lambda Execution Role'
+    Value: !GetAtt LambdaExecutionRole.Arn      
+

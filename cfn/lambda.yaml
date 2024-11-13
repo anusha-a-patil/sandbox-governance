@@ -1,0 +1,91 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Lambda Function with SQS Trigger'
+
+Parameters:
+  EnvType:
+    Type: String
+    Default: "dev"
+    Description: Environment type (e.g., prod, dev)
+  
+  DomainName:
+    Type: String
+    Description: Domain name for the application
+    
+  Runtime:
+    Type: String
+    Default: python3.9
+    AllowedValues:
+      - python3.8
+      - python3.9
+      - python3.10
+    Description: Runtime for Lambda function
+
+  S3BucketName:
+    Type: String
+    Description: S3 bucket containing Lambda code
+
+  S3Key:
+    Type: String
+    Description: S3 key for Lambda code package
+
+  BatchSize:
+    Type: Number
+    Default: 10
+    Description: The maximum number of messages to retrieve per batch
+    MinValue: 1
+    MaxValue: 10000
+
+  LambdaExecutionRoleArn:
+    Type: String
+    Description: The IAM Role used to Execute Lambda
+
+  SQSQueue:
+    Type: String
+    Description: The Name of the SQS Queue to poll
+
+  RetentionInDays:
+    Type: String
+    Description: Retention in Days  
+
+Resources:
+
+  LambdaFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: 
+        Fn::Join:
+          - "-"
+          - [ "sandbox", !Ref DomainName, !Ref EnvType, "function"]
+      Runtime: !Ref Runtime
+      Handler: index.handler
+      Role: !Ref LambdaExecutionRoleArn
+      Code:
+        S3Bucket: !Ref S3BucketName
+        S3Key: !Ref S3Key
+      MemorySize: 128
+      Timeout: 60
+      Environment:
+        Variables:
+          ENV_TYPE: !Ref EnvType
+          QUEUE_URL: !Ref SQSQueue
+
+  # Lambda Event Source Mapping
+  SQSEventSourceMapping:
+    Type: AWS::Lambda::EventSourceMapping
+    Properties:
+      BatchSize: !Ref BatchSize
+      Enabled: true
+      EventSourceArn: !Ref SQSQueueArn
+      FunctionName: !Ref LambdaFunction
+
+  # CloudWatch Log Group
+  LambdaLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${LambdaFunction}
+      RetentionInDays: !Ref RetentionInDays
+
+Outputs:
+  LambdaFunctionArn:
+    Description: ARN of the Lambda function
+    Value: !GetAtt LambdaFunction.Arn

@@ -64,7 +64,43 @@ Parameters:
   RetentionInDays:
     Type: Number
     Default: 30
-    Description: The number of days to retain log events            
+    Description: The number of days to retain log events
+
+#Lambda Parameters
+  LambdaPath:
+    Type: String
+    Description: 'Lambda yaml path Parameters' 
+  Runtime:
+    Type: String
+    Default: python3.9
+    AllowedValues:
+      - python3.8
+      - python3.9
+      - python3.10
+    Description: Runtime for Lambda function
+  S3BucketName:
+    Type: String
+    Description: S3 bucket containing Lambda code
+    Default: 'mycicd-bucket-ap'
+  S3Key:
+    Type: String
+    Default: 'lambda/Function.py'
+    Description: S3 key for Lambda code package
+  BatchSize:
+    Type: Number
+    Default: 10
+    Description: The maximum number of messages to retrieve per batch
+    MinValue: 1
+    MaxValue: 10000
+  SQSQueue:
+    Type: String
+    Description: The Name of the SQS Queue to poll
+    Default: 'TestQueue'
+  SQSQueueArn:
+    Type: String
+    Description: The Name of the SQS Queue to poll
+    Default: 'arn:aws:sqs:us-east-1:903432419063:TestQueue'
+
 
 Resources:
 
@@ -76,6 +112,7 @@ Resources:
         EnvType: !Ref EnvType
         DomainName: !Ref DomainName
         DataLakeBucketName: !Ref DataLakeBucket
+        SQSQueueArn: !Ref SQSQueueArn
 
   LakeFormationStack:
     Type: AWS::CloudFormation::Stack
@@ -121,6 +158,21 @@ Resources:
         JobRoleArn: !GetAtt IAMRoles.Outputs.GlueJobRoleArn
         RetentionInDays: !Ref RetentionInDays
 
+  Lambda:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: !Ref LambdaPath
+      Parameters:
+        EnvType: !Ref EnvType 
+        DomainName: !Ref DomainName
+        Runtime: !Ref Runtime
+        S3BucketName: !Ref S3BucketName
+        S3Key: !Ref S3Key
+        BatchSize: !Ref BatchSize
+        LambdaExecutionRoleArn: !GetAtt IAMRoles.Outputs.LambdaExecutionRoleArn
+        SQSQueue: !Ref SQSQueue
+        RetentionInDays: !Ref RetentionInDays
+
 Outputs:
 
   LFServiceRoleArn:
@@ -132,6 +184,10 @@ Outputs:
   GlueJobRoleArn:      
     Description: 'Glue Job IAM Role'
     Value: !GetAtt IAMRoles.Outputs.GlueJobRoleArn
+
+  LambdaExecutionRoleArn:
+    Description: 'Name of the Lambda Execution Role'
+    Value: !GetAtt IAMRoles.Outputs.LambdaExecutionRoleArn     
           
   DatabaseName:
     Description: 'Name of the Glue Database'
@@ -140,3 +196,7 @@ Outputs:
   JobName:
     Description: 'The name of the created Glue Job'
     Value: !GetAtt GlueJob.Outputs.JobName
+
+  LambdaFunctionArn:
+    Description: ARN of the Lambda function
+    Value: !GetAtt Lambda.Outputs.LambdaFunctionArn
