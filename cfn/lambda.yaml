@@ -74,7 +74,7 @@ Resources:
           QUEUE_URL: !Ref SQSQueue
 
   # Lambda Event Source Mapping
-  SQSEventSourceMapping:
+  LambdaSQSTrigger:
     Type: AWS::Lambda::EventSourceMapping
     Properties:
       BatchSize: !Ref BatchSize
