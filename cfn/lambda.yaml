@@ -43,6 +43,10 @@ Parameters:
     Type: String
     Description: The Name of the SQS Queue to poll
 
+  SQSQueueArn:
+    Type: String
+    Description: The Name of the SQS Queue to poll    
+
   RetentionInDays:
     Type: String
     Description: Retention in Days  

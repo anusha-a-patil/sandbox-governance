@@ -171,6 +171,7 @@ Resources:
         BatchSize: !Ref BatchSize
         LambdaExecutionRoleArn: !GetAtt IAMRoles.Outputs.LambdaExecutionRoleArn
         SQSQueue: !Ref SQSQueue
+        SQSQueueArn: !Ref SQSQueueArn        
         RetentionInDays: !Ref RetentionInDays
 
 Outputs:
