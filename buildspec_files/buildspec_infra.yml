@@ -52,7 +52,7 @@ phases:
         lambdaurl=https://s3.amazonaws.com/mycicd-bucket-apat/cicd-files/lambda.yaml 
 
       # Create a zip file of the Lambda code
-      - cd $CODEBUILD_SRC_DIR/cfn/script/lambda  # Change to your Lambda code directory
+      - cd $CODEBUILD_SRC_DIR/cfn/script/lambda/  # Change to your Lambda code directory
       - zip -r function.zip ./*
       
       # Copy the zip file to S3
