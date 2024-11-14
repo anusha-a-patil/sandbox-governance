@@ -34,21 +34,21 @@ phases:
         echo $lfpermissionsfile
         gluejobfilename="glue_job.yaml"
         gluejobfile=$CODEBUILD_SRC_DIR/cfn/"${gluejobfilename}"
-        echo $gluejobfile
-      #lambdafilename="lambda.yaml"
-      #lambdafile=$CODEBUILD_SRC_DIR/cfn/"${lambdafilename}"
-      #echo $lambdafile                                                          
+        echo $gluejobfile                                                        
         aws s3 cp $iamrolefile s3://mycicd-bucket-apat/cicd-files/
         aws s3 cp $gluedbfile s3://mycicd-bucket-apat/cicd-files/
         aws s3 cp $lffile s3://mycicd-bucket-apat/cicd-files/
         aws s3 cp $lfpermissionsfile s3://mycicd-bucket-apat/cicd-files/
-        aws s3 cp $gluejobfile s3://mycicd-bucket-apat/cicd-files/
-      # aws s3 cp $lambdafile s3://mycicd-bucket-apat/cicd-files/                          
+        aws s3 cp $gluejobfile s3://mycicd-bucket-apat/cicd-files/                        
         iamroleurl=https://s3.amazonaws.com/mycicd-bucket-apat/cicd-files/iam_roles.yaml
         GlueDBurl=https://s3.amazonaws.com/mycicd-bucket-apat/cicd-files/glue_database.yaml
         lfurl=https://s3.amazonaws.com/mycicd-bucket-apat/cicd-files/lakeformation.yaml
         lfpermissionsurl=https://s3.amazonaws.com/mycicd-bucket-apat/cicd-files/lfpermissions.yaml
         gluejoburl=https://s3.amazonaws.com/mycicd-bucket-apat/cicd-files/glue_job.yaml
+      # aws s3 cp $lambdafile s3://mycicd-bucket-apat/cicd-files/          
+      # lambdafilename="lambda.yaml"
+      # lambdafile=$CODEBUILD_SRC_DIR/cfn/"${lambdafilename}"
+      # echo $lambdafile          
       # lambdaurl=https://s3.amazonaws.com/mycicd-bucket-apat/cicd-files/lambda.yaml 
       # Checking the current directory path
       # - echo "Current directory structure:"
