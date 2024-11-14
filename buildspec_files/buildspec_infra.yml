@@ -35,37 +35,37 @@ phases:
         gluejobfilename="glue_job.yaml"
         gluejobfile=$CODEBUILD_SRC_DIR/cfn/"${gluejobfilename}"
         echo $gluejobfile
-        lambdafilename="lambda.yaml"
-        lambdafile=$CODEBUILD_SRC_DIR/cfn/"${lambdafilename}"
-        echo $lambdafile                                                          
+      #lambdafilename="lambda.yaml"
+      #lambdafile=$CODEBUILD_SRC_DIR/cfn/"${lambdafilename}"
+      #echo $lambdafile                                                          
         aws s3 cp $iamrolefile s3://mycicd-bucket-apat/cicd-files/
         aws s3 cp $gluedbfile s3://mycicd-bucket-apat/cicd-files/
         aws s3 cp $lffile s3://mycicd-bucket-apat/cicd-files/
         aws s3 cp $lfpermissionsfile s3://mycicd-bucket-apat/cicd-files/
         aws s3 cp $gluejobfile s3://mycicd-bucket-apat/cicd-files/
-        aws s3 cp $lambdafile s3://mycicd-bucket-apat/cicd-files/                          
+      # aws s3 cp $lambdafile s3://mycicd-bucket-apat/cicd-files/                          
         iamroleurl=https://s3.amazonaws.com/mycicd-bucket-apat/cicd-files/iam_roles.yaml
         GlueDBurl=https://s3.amazonaws.com/mycicd-bucket-apat/cicd-files/glue_database.yaml
         lfurl=https://s3.amazonaws.com/mycicd-bucket-apat/cicd-files/lakeformation.yaml
         lfpermissionsurl=https://s3.amazonaws.com/mycicd-bucket-apat/cicd-files/lfpermissions.yaml
         gluejoburl=https://s3.amazonaws.com/mycicd-bucket-apat/cicd-files/glue_job.yaml
-        lambdaurl=https://s3.amazonaws.com/mycicd-bucket-apat/cicd-files/lambda.yaml 
-      #Checking the current directory path
-      - echo "Current directory structure:"
-      - pwd
-      - ls -R
-      # Create a zip file of the Lambda code
-      - cd $CODEBUILD_SRC_DIR/cfn/script/lambda/  # Change to your Lambda code directory
-      - zip -r function.zip ./*
-      # Copy the zip file to S3
-      - aws s3 cp function.zip s3://mycicd-bucket-ap/function.zip
-      
+      # lambdaurl=https://s3.amazonaws.com/mycicd-bucket-apat/cicd-files/lambda.yaml 
+      # Checking the current directory path
+      # - echo "Current directory structure:"
+      # - pwd
+      # - ls -R
+      # # Create a zip file of the Lambda code
+      # - cd $CODEBUILD_SRC_DIR/cfn/script/lambda/  # Change to your Lambda code directory
+      # - zip -r function.zip ./*
+      # # Copy the zip file to S3
+      # - aws s3 cp function.zip s3://mycicd-bucket-ap/function.zip
+      # LambdaPath="${lambdaurl}"
       # Optional: Print success message
       - echo "Successfully uploaded Lambda package to s3://mycicd-bucket-ap/function.zip"        
         aws cloudformation deploy \
           --template-file $cfnfile \
           --stack-name datamesh-stack \
-          --parameter-overrides EnvType="${env}" DomainName="${domain}" IAMRolePath="${iamroleurl}" GlueDBPath="${GlueDBurl}" lfPath="${lfurl}" lfpermissionsPath="${lfpermissionsurl}" GlueJobPath="${gluejoburl}" LambdaPath="${lambdaurl}"\
+          --parameter-overrides EnvType="${env}" DomainName="${domain}" IAMRolePath="${iamroleurl}" GlueDBPath="${GlueDBurl}" lfPath="${lfurl}" lfpermissionsPath="${lfpermissionsurl}" GlueJobPath="${gluejoburl}" \
           --capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM
   post_build:
     commands:
