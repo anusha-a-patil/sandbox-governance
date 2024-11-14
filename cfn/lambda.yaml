@@ -45,10 +45,10 @@ Parameters:
 
   SQSQueueArn:
     Type: String
-    Description: The Name of the SQS Queue to poll    
+    Description: The ARN of the SQS Queue to poll    
 
   RetentionInDays:
-    Type: String
+    Type: Number
     Description: Retention in Days  
 
 Resources:
@@ -86,7 +86,7 @@ Resources:
   LambdaLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
-      LogGroupName: !Sub /aws/lambda/${LambdaFunction}es  
+      LogGroupName: !Sub /aws/lambda/${LambdaFunction}
       RetentionInDays: !Ref RetentionInDays
 
 Outputs:

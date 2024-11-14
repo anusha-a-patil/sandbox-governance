@@ -101,7 +101,6 @@ Parameters:
     Description: The Name of the SQS Queue to poll
     Default: 'arn:aws:sqs:us-east-1:903432419063:TestQueue'
 
-
 Resources:
 
   IAMRoles:
