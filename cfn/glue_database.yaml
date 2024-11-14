@@ -10,9 +10,13 @@ Parameters:
     Type: String
     Description: The name of the domain
 
+Conditions:
+  DBvalidate: !Equals [ !Ref DBName, "sandbox--db" ]    
+
 Resources:
   GlueDatabase:
     Type: AWS::Glue::Database
+    Condition: DBvalidate
     Properties:
       CatalogId: !Ref AWS::AccountId
       DatabaseInput:
