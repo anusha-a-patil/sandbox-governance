@@ -57,7 +57,6 @@ phases:
       # Create a zip file of the Lambda code
       - cd $CODEBUILD_SRC_DIR/cfn/script/lambda/  # Change to your Lambda code directory
       - zip -r function.zip ./*
-      
       # Copy the zip file to S3
       - aws s3 cp function.zip s3://mycicd-bucket-ap/function.zip
       
