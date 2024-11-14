@@ -9,9 +9,13 @@ Parameters:
   DomainName:
     Type: String
     Description: The name of the domain
+  DBName:
+    Type: String
+    Description: The name of the domain
+    Default: "sandbox--db"
 
 Conditions:
-  DBvalidate: !Equals [ !Ref DBName, "sandbox--db" ]    
+  DBvalidate: !Equals [ !Ref DBName, "yes" ]    
 
 Resources:
   GlueDatabase:
