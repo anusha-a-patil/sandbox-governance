@@ -50,7 +50,10 @@ phases:
         lfpermissionsurl=https://s3.amazonaws.com/mycicd-bucket-apat/cicd-files/lfpermissions.yaml
         gluejoburl=https://s3.amazonaws.com/mycicd-bucket-apat/cicd-files/glue_job.yaml
         lambdaurl=https://s3.amazonaws.com/mycicd-bucket-apat/cicd-files/lambda.yaml 
-
+      #Checking the current directory path
+      - echo "Current directory structure:"
+      - pwd
+      - ls -R
       # Create a zip file of the Lambda code
       - cd $CODEBUILD_SRC_DIR/cfn/script/lambda/  # Change to your Lambda code directory
       - zip -r function.zip ./*
