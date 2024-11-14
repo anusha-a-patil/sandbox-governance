@@ -84,7 +84,7 @@ Parameters:
     Default: 'mycicd-bucket-ap'
   S3Key:
     Type: String
-    Default: 'lambda/Function.zip'
+    Default: 'function.zip'
     Description: S3 key for Lambda code package
   BatchSize:
     Type: Number
