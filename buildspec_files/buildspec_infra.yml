@@ -49,7 +49,17 @@ phases:
         lfurl=https://s3.amazonaws.com/mycicd-bucket-apat/cicd-files/lakeformation.yaml
         lfpermissionsurl=https://s3.amazonaws.com/mycicd-bucket-apat/cicd-files/lfpermissions.yaml
         gluejoburl=https://s3.amazonaws.com/mycicd-bucket-apat/cicd-files/glue_job.yaml
-        lambdaurl=https://s3.amazonaws.com/mycicd-bucket-apat/cicd-files/lambda.yaml       
+        lambdaurl=https://s3.amazonaws.com/mycicd-bucket-apat/cicd-files/lambda.yaml 
+
+      # Create a zip file of the Lambda code
+      - cd $CODEBUILD_SRC_DIR/cfn/script/lambda  # Change to your Lambda code directory
+      - zip -r function.zip ./*
+      
+      # Copy the zip file to S3
+      - aws s3 cp function.zip s3://mycicd-bucket-ap/function.zip
+      
+      # Optional: Print success message
+      - echo "Successfully uploaded Lambda package to s3://mycicd-bucket-ap/function.zip"        
         aws cloudformation deploy \
           --template-file $cfnfile \
           --stack-name datamesh-stack \
